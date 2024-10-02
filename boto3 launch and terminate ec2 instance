@@ -1,0 +1,33 @@
+import boto3
+
+ec2 = boto3.resource('ec2', region_name='your-region')
+ec2_client = boto3.client('ec2', region_name='your-region')
+
+def launch_instance():
+    try:
+        instance = ec2.create_instances(
+            ImageId='ami-0c55b159cbfafe1f0',  # Replace with a valid AMI ID
+            MinCount=1,
+            MaxCount=1,
+            InstanceType='t2.micro',
+            KeyName='your-key-pair-name'  # Replace with your key pair
+        )
+        instance_id = instance[0].id
+        print(f'Launched EC2 instance with ID: {instance_id}')
+        return instance_id
+    except Exception as e:
+        print(f'Error launching instance: {e}')
+        return None
+
+def terminate_instance(instance_id):
+    try:
+        ec2_client.terminate_instances(InstanceIds=[instance_id])
+        print(f'Terminated EC2 instance with ID: {instance_id}')
+    except Exception as e:
+        print(f'Error terminating instance: {e}')
+
+if __name__ == "__main__":
+    instance_id = launch_instance()
+
+    if instance_id:
+        terminate_instance(instance_id)
